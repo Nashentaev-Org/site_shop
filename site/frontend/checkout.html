@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оформление заказа - Fashion Store</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff4444;
+            text-decoration: none;
+        }
+
+        .logo::before {
+            content: '🛍️';
+            margin-right: 10px;
+        }
+
+        .checkout-steps {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: bold;
+            color: #999;
+        }
+
+        .step.active {
+            color: #ff4444;
+        }
+
+        .step.completed {
+            color: #28a745;
+        }
+
+        .step-arrow {
+            color: #ddd;
+        }
+
+        /* Main Content */
+        .checkout-main {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        .checkout-form {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+        }
+
+        .order-summary {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            height: fit-content;
+            position: sticky;
+            top: 120px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            color: #333;
+            border-bottom: 2px solid #ff4444;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Form Styles */
+        .form-section {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #ff4444;
+            box-shadow: 0 0 0 3px rgba(255, 68, 68, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Delivery Options */
+        .delivery-options {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .delivery-option {
+            border: 2px solid #eee;
+            border-radius: 8px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .delivery-option:hover {
+            border-color: #ff4444;
+        }
+
+        .delivery-option.selected {
+            border-color: #ff4444;
+            background: rgba(255, 68, 68, 0.05);
+        }
+
+        .delivery-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .delivery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .delivery-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .delivery-price {
+            font-weight: bold;
+            color: #ff4444;
+        }
+
+        .delivery-description {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Payment Options */
+        .payment-options {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .payment-option {
+            border: 2px solid #eee;
+            border-radius: 8px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .payment-option:hover {
+            border-color: #ff4444;
+        }
+
+        .payment-option.selected {
+            border-color: #ff4444;
+            background: rgba(255, 68, 68, 0.05);
+        }
+
+        .payment-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .payment-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .payment-icon {
+            font-size: 1.5rem;
+        }
+
+        .payment-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .payment-description {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Card Details */
+        .card-details {
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .card-details.show {
+            display: block;
+        }
+
+        /* Order Summary */
+        .summary-items {
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-image {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #666;
+            flex-shrink: 0;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.3rem;
+        }
+
+        .item-details {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .item-price {
+            font-weight: bold;
+            color: #ff4444;
+        }
+
+        /* Summary Totals */
+        .summary-totals {
+            border-top: 2px solid #eee;
+            padding-top: 1rem;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding: 0.3rem 0;
+        }
+
+        .summary-row.total {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            border-top: 2px solid #eee;
+            margin-top: 1rem;
+            padding-top: 1rem;
+        }
+
+        .discount-row {
+            color: #28a745;
+        }
+
+        /* Place Order Button */
+        .place-order-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #28a745, #34ce57);
+            color: white;
+            border: none;
+            padding: 1.5rem;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1.5rem;
+        }
+
+        .place-order-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(40, 167, 69, 0.3);
+        }
+
+        .place-order-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .security-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 1rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Terms and Conditions */
+        .terms-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .terms-checkbox input[type="checkbox"] {
+            margin-top: 0.2rem;
+            accent-color: #ff4444;
+        }
+
+        .terms-text {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .terms-text a {
+            color: #ff4444;
+            text-decoration: none;
+        }
+
+        .terms-text a:hover {
+            text-decoration: underline;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .checkout-steps {
+                display: none;
+            }
+            
+            .checkout-main {
+                grid-template-columns: 1fr;
+            }
+            
+            .order-summary {
+                position: static;
+                order: -1;
+            }
+            
+            .form-row,
+            .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .checkout-form,
+            .order-summary {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #ff4444;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav container">
+            <a href="main.html" class="logo">Fashion Store</a>
+            <div class="checkout-steps">
+                <div class="step completed">
+                    <span>1. Корзина</span>
+                </div>
+                <span class="step-arrow">→</span>
+                <div class="step active">
+                    <span>2. Оформление</span>
+                </div>
+                <span class="step-arrow">→</span>
+                <div class="step">
+                    <span>3. Подтверждение</span>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="checkout-main">
+            <!-- Checkout Form -->
+            <div class="checkout-form">
+                <form id="checkoutForm" onsubmit="processOrder(event)">
+                    <!-- Contact Information -->
+                    <div class="form-section">
+                        <h2 class="section-title">Контактная информация</h2>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="firstName">Имя *</label>
+                                <input type="text" id="firstName" name="firstName" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="lastName">Фамилия *</label>
+                                <input type="text" id="lastName" name="lastName" class="form-input" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="email">Email *</label>
+                                <input type="email" id="email" name="email" class="form-input" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="phone">Телефон *</label>
+                                <input type="tel" id="phone" name="phone" class="form-input" 
+                                       placeholder="+7 (___) ___-__-__" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delivery Information -->
+                    <div class="form-section">
+                        <h2 class="section-title">Способ доставки</h2>
+                        
+                        <div class="delivery-options">
+                            <label class="delivery-option selected" for="courier">
+                                <input type="radio" name="delivery" value="courier" id="courier" checked 
+                                       onchange="selectDelivery(this)">
+                                <div class="delivery-header">
+                                    <span class="delivery-name">🚚 Курьерская доставка</span>
+                                    <span class="delivery-price">300₽</span>
+                                </div>
+                                <div class="delivery-description">
+                                    Доставка курьером по Москве в течение 1-2 дней
+                                </div>
+                            </label>
+
+                            <label class="delivery-option" for="pickup">
+                                <input type="radio" name="delivery" value="pickup" id="pickup" 
+                                       onchange="selectDelivery(this)">
+                                <div class="delivery-header">
+                                    <span class="delivery-name">📦 Пункт выдачи</span>
+                                    <span class="delivery-price">200₽</span>
+                                </div>
+                                <div class="delivery-description">
+                                    Получение в пунктах выдачи по всей Алматы
+                                </div>
+                            </label>
+                        </div>
+
+                        <!-- Address Fields -->
+                        <div id="addressFields">
+                            <h3 style="margin: 1.5rem 0 1rem 0; font-size: 1.2rem;">Адрес доставки</h3>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="city">Город *</label>
+                                <input type="text" id="city" name="city" class="form-input" required>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="street">Улица *</label>
+                                    <input type="text" id="street" name="street" class="form-input" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="house">Дом *</label>
+                                    <input type="text" id="house" name="house" class="form-input" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Method -->
+                    <div class="form-section">
+                        <h2 class="section-title">Способ оплаты</h2>
+                        
+                        <div class="payment-options">
+                            <label class="payment-option selected" for="card">
+                                <input type="radio" name="payment" value="card" id="card" checked 
+                                       onchange="selectPayment(this)">
+                                <div class="payment-header">
+                                    <span class="payment-icon">💳</span>
+                                    <span class="payment-name">Банковская карта</span>
+                                </div>
+                                <div class="card-details show" id="cardDetails">
+                                    <!-- Поля для карты остаются для UI, но не отправляются на бэкенд -->
+                                </div>
+                            </label>
+
+                            <label class="payment-option" for="cash">
+                                <input type="radio" name="payment" value="cash" id="cash" 
+                                       onchange="selectPayment(this)">
+                                <div class="payment-header">
+                                    <span class="payment-icon">💵</span>
+                                    <span class="payment-name">Наличными при получении</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Terms and Conditions -->
+                    <div class="terms-checkbox">
+                        <input type="checkbox" id="terms" name="terms" required>
+                        <div class="terms-text">
+                            Я соглашаюсь с <a href="#" target="_blank">условиями использования</a>.
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="order-summary">
+                <h2 class="section-title">Ваш заказ</h2>
+                
+                <div class="summary-items" id="summaryItems">
+                    <!-- Items will be generated by JavaScript -->
+                </div>
+
+                <div class="summary-totals">
+                    <div class="summary-row">
+                        <span>Товары:</span>
+                        <span id="subtotal">0₽</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Доставка:</span>
+                        <span id="deliveryCost">300₽</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Итого:</span>
+                        <span id="totalAmount">0₽</span>
+                    </div>
+                </div>
+
+                <button type="submit" form="checkoutForm" class="place-order-btn" id="placeOrderBtn">
+                    <span id="btnText">Оформить заказ</span>
+                    <span id="btnSpinner" class="loading-spinner hidden"></span>
+                </button>
+
+                <div class="security-info">
+                    <span>🔒</span>
+                    <span>Безопасная оплата SSL</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        let selectedDelivery = 'courier';
+        let deliveryCosts = {
+            courier: 300,
+            pickup: 200
+        };
+        const API_BASE_URL = 'http://127.0.0.1:8000';
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (cart.length === 0) {
+                alert('Ваша корзина пуста. Вы будете перенаправлены на страницу каталога.');
+                window.location.href = 'catalog.html';
+                return;
+            }
+            renderOrderSummary();
+        });
+
+        function renderOrderSummary() {
+            const summaryItems = document.getElementById('summaryItems');
+            summaryItems.innerHTML = '';
+            cart.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'summary-item';
+                itemElement.innerHTML = `
+                    <div class="item-image">${item.image}</div>
+                    <div class="item-info">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-details">Количество: ${item.quantity}</div>
+                    </div>
+                    <div class="item-price">${item.price * item.quantity}₽</div>
+                `;
+                summaryItems.appendChild(itemElement);
+            });
+            updateTotals();
+        }
+
+        function updateTotals() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const deliveryCost = subtotal >= 3000 ? 0 : deliveryCosts[selectedDelivery];
+            const total = subtotal + deliveryCost;
+
+            document.getElementById('subtotal').textContent = `${subtotal}₽`;
+            document.getElementById('deliveryCost').textContent = deliveryCost === 0 ? 'Бесплатно' : `${deliveryCost}₽`;
+            document.getElementById('totalAmount').textContent = `${total}₽`;
+        }
+
+        function selectDelivery(radio) {
+            document.querySelectorAll('.delivery-option').forEach(option => option.classList.remove('selected'));
+            radio.closest('.delivery-option').classList.add('selected');
+            selectedDelivery = radio.value;
+            document.getElementById('addressFields').style.display = selectedDelivery === 'pickup' ? 'none' : 'block';
+            updateTotals();
+        }
+
+        function selectPayment(radio) {
+            document.querySelectorAll('.payment-option').forEach(option => option.classList.remove('selected'));
+            radio.closest('.payment-option').classList.add('selected');
+            document.getElementById('cardDetails').classList.toggle('show', radio.value === 'card');
+        }
+
+        async function processOrder(event) {
+            event.preventDefault();
+            
+            const btn = document.getElementById('placeOrderBtn');
+            const btnText = document.getElementById('btnText');
+            const btnSpinner = document.getElementById('btnSpinner');
+            
+            btn.disabled = true;
+            btnText.classList.add('hidden');
+            btnSpinner.classList.remove('hidden');
+            
+            // Сбор данных для отправки
+            const formData = new FormData(document.getElementById('checkoutForm'));
+            const totalAmount = parseFloat(document.getElementById('totalAmount').textContent.replace('₽', ''));
+
+            const orderData = {
+                firstName: formData.get('firstName'),
+                lastName: formData.get('lastName'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                delivery: document.querySelector('input[name="delivery"]:checked').value,
+                payment: document.querySelector('input[name="payment"]:checked').value,
+                city: formData.get('city'),
+                street: formData.get('street'),
+                items: cart.map(item => ({
+                    id: item.id || 0, // Убедимся, что ID есть
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity,
+                    size: item.size || 'N/A',
+                    color: item.color || 'N/A'
+                })),
+                totalAmount: totalAmount
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/orders`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                });
+                
+                const result = await response.json();
+
+                if (!response.ok) {
+                    // Если API возвращает ошибку валидации или другую
+                    throw new Error(result.detail || 'Не удалось оформить заказ. Попробуйте снова.');
+                }
+                
+                // Успех
+                localStorage.removeItem('cart');
+                alert(`Заказ успешно оформлен! Номер вашего заказа: ${result.order_id}`);
+                window.location.href = 'main.html';
+
+            } catch (error) {
+                console.error('Ошибка при оформлении заказа:', error);
+                alert(`Произошла ошибка: ${error.message}`);
+                // Возвращаем кнопку в исходное состояние
+                btn.disabled = false;
+                btnText.classList.remove('hidden');
+                btnSpinner.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>

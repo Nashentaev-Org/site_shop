@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Загрузка... - Fashion Store</title>
+    <style>
+        /* Стили остаются без изменений */
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav container">
+            <a href="main.html" class="logo">Fashion Store</a>
+            <ul class="nav-menu">
+                <li><a href="main.html">Главная</a></li>
+                <li><a href="catalog.html">Каталог</a></li>
+                <li><a href="contacts.html">Контакты</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="cart.html" class="cart-btn">Корзина (<span id="cartCount">0</span>)</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb">
+        <div class="container">
+            <ul class="breadcrumb-list">
+                <li><a href="main.html">Главная</a></li>
+                <li class="breadcrumb-separator">></li>
+                <li><a href="catalog.html" id="breadcrumb-category">Каталог</a></li>
+                <li class="breadcrumb-separator">></li>
+                <li id="breadcrumb-name">Загрузка...</li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Product Section -->
+    <section class="product-section">
+        <div class="container" id="product-container">
+            <!-- Сюда будет вставлен контент товара -->
+            <p>Загрузка информации о товаре...</p>
+        </div>
+    </section>
+
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:8000';
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        let currentProduct = null; // Здесь будем хранить загруженный товар
+
+        // Обновляем счетчик корзины
+        document.getElementById('cartCount').textContent = cart.length;
+
+        // Функция для отображения данных товара на странице
+        function populateProductData(product) {
+            currentProduct = product; // Сохраняем товар глобально
+            
+            // Обновляем title страницы
+            document.title = `${product.name} - Fashion Store`;
+
+            // Обновляем "хлебные крошки"
+            document.getElementById('breadcrumb-category').textContent = getCategoryName(product.category);
+            document.getElementById('breadcrumb-name').textContent = product.name;
+
+            // Генерируем HTML для контейнера товара
+            const container = document.getElementById('product-container');
+            container.innerHTML = `
+                <div class="product-container">
+                    <div class="product-gallery">
+                        <div class="main-image">${product.image}</div>
+                    </div>
+                    <div class="product-info">
+                        <h1 class="product-title">${product.name}</h1>
+                        <div class="product-rating">
+                            <div class="stars">${'★'.repeat(Math.floor(product.rating))}${'☆'.repeat(5-Math.floor(product.rating))}</div>
+                            <span class="rating-text">(${product.reviews} отзывов)</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="current-price">${product.price}₽</span>
+                            ${product.oldPrice ? `<span class="old-price">${product.oldPrice}₽</span>` : ''}
+                        </div>
+                        <p class="product-description">${product.description}</p>
+                        <div class="product-options">
+                            <div class="option-group">
+                                <label class="option-label">Размер:</label>
+                                <div class="size-options">
+                                    ${product.sizes.map(size => `<div class="size-option">${size.toUpperCase()}</div>`).join('')}
+                                </div>
+                            </div>
+                             <div class="option-group">
+                                <label class="option-label">Цвет:</label>
+                                <div class="color-options">
+                                     ${product.colors.map(color => `<div class="color-option" style="background-color:${color}"></div>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" onclick="addToCart()">Добавить в корзину</button>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        // Функция для загрузки данных о товаре с бэкенда
+        async function loadProduct() {
+            const params = new URLSearchParams(window.location.search);
+            const productId = params.get('id');
+
+            if (!productId) {
+                document.getElementById('product-container').innerHTML = '<h1>Ошибка: ID товара не указан.</h1>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/products/${productId}`);
+                if (!response.ok) {
+                    throw new Error('Товар не найден');
+                }
+                const product = await response.json();
+                populateProductData(product);
+            } catch (error) {
+                console.error(error);
+                document.getElementById('product-container').innerHTML = `<h1>Ошибка: ${error.message}</h1>`;
+            }
+        }
+
+        // Добавление в корзину
+        function addToCart() {
+            if (!currentProduct) return;
+
+            const cartItem = {
+                ...currentProduct,
+                quantity: 1 // По умолчанию добавляем 1 товар
+            };
+
+            cart.push(cartItem);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            document.getElementById('cartCount').textContent = cart.length;
+            showNotification(`${currentProduct.name} добавлен в корзину!`);
+        }
+        
+        function getCategoryName(category) {
+            const names = {'men': 'Мужское', 'women': 'Женское', 'kids': 'Детское'};
+            return names[category] || 'Каталог';
+        }
+
+        function showNotification(message) {
+            // ... (код функции showNotification) ...
+        }
+
+        // Запускаем загрузку товара при открытии страницы
+        document.addEventListener('DOMContentLoaded', loadProduct);
+    </script>
+</body>
+</html>

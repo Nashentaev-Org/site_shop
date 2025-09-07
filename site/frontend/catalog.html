@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Каталог - Fashion Store</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff4444;
+            text-decoration: none;
+        }
+
+        .logo::before {
+            content: '🛍️';
+            margin-right: 10px;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover {
+            color: #ff4444;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .search-box {
+            padding: 0.5rem 1rem;
+            border: 2px solid #eee;
+            border-radius: 25px;
+            outline: none;
+            transition: border-color 0.3s;
+            width: 250px;
+        }
+
+        .search-box:focus {
+            border-color: #ff4444;
+        }
+
+        .cart-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .cart-btn:hover {
+            background: #e03333;
+        }
+
+        /* Catalog Header */
+        .catalog-header {
+            background: white;
+            padding: 2rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .catalog-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .catalog-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        /* Main Content */
+        .catalog-main {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        /* Sidebar Filters */
+        .sidebar {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            height: fit-content;
+            position: sticky;
+            top: 120px;
+        }
+
+        .filter-section {
+            margin-bottom: 2rem;
+        }
+
+        .filter-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #333;
+            border-bottom: 2px solid #ff4444;
+            padding-bottom: 0.5rem;
+        }
+
+        .filter-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            padding: 0.3rem 0;
+            transition: color 0.3s;
+        }
+
+        .filter-option:hover {
+            color: #ff4444;
+        }
+
+        .filter-option input[type="checkbox"] {
+            accent-color: #ff4444;
+        }
+
+        .price-range {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .price-input {
+            width: 80px;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .clear-filters {
+            background: #f8f9fa;
+            color: #666;
+            border: 1px solid #ddd;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .clear-filters:hover {
+            background: #ff4444;
+            color: white;
+            border-color: #ff4444;
+        }
+
+        /* Products Section */
+        .products-section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+        }
+
+        .products-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .results-count {
+            color: #666;
+        }
+
+        .sort-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .view-toggle {
+            display: flex;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .view-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .view-btn.active {
+            background: #ff4444;
+            color: white;
+        }
+
+        .sort-select {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .products-list {
+            display: none;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .product-card {
+            border: 1px solid #eee;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s;
+            cursor: pointer;
+            background: white;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border-color: #ff4444;
+        }
+
+        .product-image {
+            height: 250px;
+            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: #999;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff4444;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-category {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .product-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stars {
+            color: #ffc107;
+        }
+
+        .rating-count {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .product-price {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .current-price {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #ff4444;
+        }
+
+        .old-price {
+            color: #999;
+            text-decoration: line-through;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .add-to-cart {
+            flex: 1;
+            background: #333;
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .add-to-cart:hover {
+            background: #ff4444;
+        }
+
+        .wishlist-btn {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .wishlist-btn:hover {
+            background: #ff4444;
+            color: white;
+            border-color: #ff4444;
+        }
+
+        /* List View */
+        .product-card.list-view {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .product-card.list-view .product-image {
+            width: 150px;
+            height: 150px;
+            flex-shrink: 0;
+            margin-right: 2rem;
+        }
+
+        .product-card.list-view .product-info {
+            flex: 1;
+            padding: 0;
+        }
+
+        .product-card.list-view .product-actions {
+            flex-shrink: 0;
+            flex-direction: column;
+            width: 150px;
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 3rem;
+        }
+
+        .pagination button {
+            padding: 0.8rem 1.2rem;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .pagination button:hover,
+        .pagination button.active {
+            background: #ff4444;
+            color: white;
+            border-color: #ff4444;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .search-box {
+                width: 150px;
+            }
+            
+            .catalog-main {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: static;
+                margin-bottom: 2rem;
+            }
+            
+            .products-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .sort-controls {
+                justify-content: space-between;
+            }
+            
+            .products-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav container">
+            <a href="main.html" class="logo">Fashion Store</a>
+            <ul class="nav-menu">
+                <li><a href="main.html">Главная</a></li>
+                <li><a href="catalog.html" style="color: #ff4444;">Каталог</a></li>
+                <li><a href="main.html#categories">Категории</a></li>
+                <li><a href="contacts.html">Контакты</a></li>
+            </ul>
+            <div class="nav-actions">
+                <input type="text" class="search-box" placeholder="Поиск товаров..." id="searchInput">
+                <a href="cart.html" class="cart-btn">Корзина (<span id="cartCount">0</span>)</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Catalog Header -->
+    <section class="catalog-header">
+        <div class="container">
+            <h1 class="catalog-title">Каталог товаров</h1>
+            <p class="catalog-subtitle">Найдите идеальную одежду для любого случая</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="catalog-main">
+            <!-- Sidebar Filters -->
+            <aside class="sidebar">
+                <div class="filter-section">
+                    <h3 class="filter-title">Категория</h3>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="checkbox" name="category" value="all" checked>
+                            Все товары
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="category" value="men">
+                            Мужское
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="category" value="women">
+                            Женское
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="category" value="kids">
+                            Детское
+                        </label>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h3 class="filter-title">Цена</h3>
+                    <div class="price-range">
+                        <input type="number" class="price-input" placeholder="От" id="priceFrom">
+                        <span>-</span>
+                        <input type="number" class="price-input" placeholder="До" id="priceTo">
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h3 class="filter-title">Размер</h3>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="checkbox" name="size" value="xs">
+                            XS
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="size" value="s">
+                            S
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="size" value="m">
+                            M
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="size" value="l">
+                            L
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="size" value="xl">
+                            XL
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="size" value="xxl">
+                            XXL
+                        </label>
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <h3 class="filter-title">Цвет</h3>
+                    <div class="filter-options">
+                        <label class="filter-option">
+                            <input type="checkbox" name="color" value="black">
+                            Черный
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="color" value="white">
+                            Белый
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="color" value="blue">
+                            Синий
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="color" value="red">
+                            Красный
+                        </label>
+                        <label class="filter-option">
+                            <input type="checkbox" name="color" value="gray">
+                            Серый
+                        </label>
+                    </div>
+                </div>
+
+                <button class="clear-filters" onclick="clearAllFilters()">
+                    Очистить фильтры
+                </button>
+            </aside>
+
+            <!-- Products Section -->
+            <main class="products-section">
+                <div class="products-header">
+                    <div class="results-count" id="resultsCount">
+                        Загрузка...
+                    </div>
+                    <div class="sort-controls">
+                        <div class="view-toggle">
+                            <button class="view-btn active" onclick="switchView('grid')">⊞</button>
+                            <button class="view-btn" onclick="switchView('list')">☰</button>
+                        </div>
+                        <select class="sort-select" id="sortSelect" onchange="applyFilters()">
+                            <option value="default">По умолчанию</option>
+                            <option value="price-low">Цена: по возрастанию</option>
+                            <option value="price-high">Цена: по убыванию</option>
+                            <option value="rating">По рейтингу</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="products-grid" id="productsGrid">
+                    <!-- Products will be generated by JavaScript -->
+                </div>
+
+                <div class="products-list" id="productsList">
+                    <!-- List view products will be generated by JavaScript -->
+                </div>
+
+                <div class="pagination">
+                    <button onclick="changePage(-1)">←</button>
+                    <button class="active" onclick="goToPage(1)">1</button>
+                    <button onclick="goToPage(2)">2</button>
+                    <button onclick="goToPage(3)">3</button>
+                    <button onclick="changePage(1)">→</button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Глобальные переменные
+        let allProducts = []; // Кэш для всех товаров, загружаемых с бэкенда
+        let filteredProducts = [];
+        let currentPage = 1;
+        let currentView = 'grid';
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+        // API URL
+        const API_BASE_URL = 'http://127.0.0.1:8000';
+
+        // Update cart count on page load
+        document.getElementById('cartCount').textContent = cart.length;
+
+        // Display products
+        function displayProducts() {
+            const gridContainer = document.getElementById('productsGrid');
+            const listContainer = document.getElementById('productsList');
+            
+            gridContainer.innerHTML = '';
+            listContainer.innerHTML = '';
+
+            if (filteredProducts.length === 0) {
+                gridContainer.innerHTML = '<p>Товары не найдены. Попробуйте изменить фильтры.</p>';
+                updateResultsCount();
+                return;
+            }
+
+            const container = currentView === 'grid' ? gridContainer : listContainer;
+
+            filteredProducts.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = `product-card ${currentView === 'list' ? 'list-view' : ''}`;
+                productCard.onclick = () => goToProduct(product.id);
+                
+                productCard.innerHTML = `
+                    <div class="product-image">
+                        ${product.image}
+                        ${product.badge ? `<div class="product-badge">${product.badge}</div>` : ''}
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">${getCategoryName(product.category)}</div>
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-rating">
+                            <div class="stars">${'★'.repeat(Math.floor(product.rating))}${'☆'.repeat(5-Math.floor(product.rating))}</div>
+                            <span class="rating-count">(${product.reviews})</span>
+                        </div>
+                        <div class="product-price">
+                            <span class="current-price">${product.price}₽</span>
+                            ${product.oldPrice ? `<span class="old-price">${product.oldPrice}₽</span>` : ''}
+                        </div>
+                        <div class="product-actions">
+                            <button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${product.id})">
+                                В корзину
+                            </button>
+                            <button class="wishlist-btn" onclick="event.stopPropagation(); toggleWishlist(${product.id})">
+                                ♡
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(productCard);
+            });
+
+            updateResultsCount();
+        }
+
+        function getCategoryName(category) {
+            const names = {
+                'men': 'Мужское',
+                'women': 'Женское', 
+                'kids': 'Детское'
+            };
+            return names[category] || category;
+        }
+
+        function updateResultsCount() {
+            document.getElementById('resultsCount').textContent = 
+                `Найдено товаров: ${filteredProducts.length}`;
+        }
+
+        function switchView(view) {
+            currentView = view;
+            
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (view === 'grid') {
+                document.getElementById('productsGrid').style.display = 'grid';
+                document.getElementById('productsList').style.display = 'none';
+            } else {
+                document.getElementById('productsGrid').style.display = 'none';
+                document.getElementById('productsList').style.display = 'flex';
+            }
+
+            displayProducts();
+        }
+
+        async function applyFilters() {
+            const resultsContainer = document.getElementById('resultsCount');
+            resultsContainer.textContent = 'Загрузка...';
+
+            const params = new URLSearchParams();
+
+            // Category filter
+            const checkedCategories = Array.from(document.querySelectorAll('input[name="category"]:checked'))
+                .map(cb => cb.value);
+            if (!checkedCategories.includes('all') && checkedCategories.length > 0) {
+                 params.append('category', checkedCategories[0]); // Пример: берем первую выбранную
+            }
+
+            // Price filter
+            const priceFrom = document.getElementById('priceFrom').value;
+            const priceTo = document.getElementById('priceTo').value;
+            if (priceFrom) params.append('min_price', priceFrom);
+            if (priceTo) params.append('max_price', priceTo);
+
+            // Size filter
+            const checkedSizes = Array.from(document.querySelectorAll('input[name="size"]:checked')).map(cb => cb.value);
+            if (checkedSizes.length > 0) params.append('size', checkedSizes[0]);
+
+            // Color filter
+            const checkedColors = Array.from(document.querySelectorAll('input[name="color"]:checked')).map(cb => cb.value);
+            if (checkedColors.length > 0) params.append('color', checkedColors[0]);
+
+            // Search filter
+            const searchTerm = document.getElementById('searchInput').value;
+            if (searchTerm) params.append('search', searchTerm);
+
+            // Sort
+            const sortBy = document.getElementById('sortSelect').value;
+            if (sortBy !== 'default') params.append('sort', sortBy);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/products?${params.toString()}`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const products = await response.json();
+                allProducts = products; // Обновляем кэш
+                filteredProducts = products; // Обновляем отфильтрованный список
+                
+                displayProducts();
+            } catch (error) {
+                console.error("Ошибка при загрузке товаров:", error);
+                resultsContainer.textContent = 'Ошибка загрузки';
+            }
+        }
+
+        function clearAllFilters() {
+            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.checked = cb.value === 'all';
+            });
+            document.getElementById('priceFrom').value = '';
+            document.getElementById('priceTo').value = '';
+            document.getElementById('searchInput').value = '';
+            document.getElementById('sortSelect').value = 'default';
+            
+            applyFilters(); // Вызываем загрузку с параметрами по умолчанию
+        }
+
+        function addToCart(productId) {
+            const product = allProducts.find(p => p.id === productId);
+            if (product) {
+                cart.push({
+                    ...product,
+                    cartId: Date.now(),
+                    quantity: 1,
+                    size: 'M',
+                    color: product.colors[0]
+                });
+                localStorage.setItem('cart', JSON.stringify(cart));
+                document.getElementById('cartCount').textContent = cart.length;
+                showNotification('Товар добавлен в корзину!');
+            }
+        }
+
+        function toggleWishlist(productId) {
+            showNotification('Добавлено в избранное!');
+        }
+
+        function goToProduct(productId) {
+            // Передаем ID товара на страницу продукта через URL параметр
+            window.location.href = `product.html?id=${productId}`;
+        }
+
+        function changePage(direction) {
+            showNotification(`Переход на страницу ${direction > 0 ? 'следующая' : 'предыдущая'}`);
+        }
+
+        function goToPage(page) {
+            currentPage = page;
+            document.querySelectorAll('.pagination button').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                background: #28a745;
+                color: white;
+                padding: 1rem 2rem;
+                border-radius: 8px;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Первая загрузка товаров при открытии страницы
+            applyFilters();
+            
+            // Добавляем слушатели на все фильтры
+            document.querySelectorAll('input[type="checkbox"], input[type="number"]')
+                .forEach(input => {
+                    input.addEventListener('change', applyFilters);
+                });
+            
+            document.getElementById('searchInput')
+                .addEventListener('input', applyFilters);
+        });
+
+        // CSS for notification animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

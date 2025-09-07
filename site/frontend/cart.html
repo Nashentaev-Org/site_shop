@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корзина - Fashion Store</title>
+    <style>
+        /* --- ОБНОВЛЕННЫЕ СТИЛИ --- */
+
+        /* 1. Глобальные переменные и стили для современного вида */
+        :root {
+            --primary-color: #ff4444;
+            --dark-color: #333;
+            --light-gray-color: #f8f9fa;
+            --border-color: #eef0f2;
+            --text-color: #555;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+            --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background: var(--light-gray-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header (без изменений) */
+        .header {
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; }
+        .logo { display: flex; align-items: center; font-size: 1.5rem; font-weight: bold; color: var(--primary-color); text-decoration: none; }
+        .logo::before { content: '🛍️'; margin-right: 10px; }
+        .nav-menu { display: flex; list-style: none; gap: 2rem; }
+        .nav-menu a { text-decoration: none; color: var(--dark-color); font-weight: 500; transition: color 0.3s; }
+        .nav-menu a:hover { color: var(--primary-color); }
+        .nav-actions { display: flex; gap: 1rem; align-items: center; }
+        .continue-shopping { background: var(--dark-color); color: white; border: none; padding: 0.7rem 1.5rem; border-radius: 25px; cursor: pointer; font-weight: bold; transition: all 0.3s; text-decoration: none; }
+        .continue-shopping:hover { background: #555; transform: translateY(-2px); }
+
+        /* Cart Header */
+        .cart-header {
+            background: white;
+            padding: 2.5rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .cart-title {
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+
+        /* Cart Content */
+        .cart-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* 2. Улучшенный блок товаров */
+        .cart-items {
+            background: white;
+            border-radius: 15px;
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .cart-summary {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            height: fit-content;
+            position: sticky;
+            top: 120px;
+            box-shadow: var(--shadow);
+        }
+
+        /* 3. Обновленный дизайн для пустой корзины */
+        .empty-cart {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 15px;
+            grid-column: 1 / -1; /* Растягиваем на всю ширину */
+            box-shadow: var(--shadow);
+            border: 2px dashed var(--border-color);
+        }
+        .empty-cart-icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            opacity: 0.5;
+        }
+        .empty-cart h2 {
+            color: var(--dark-color);
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+        .empty-cart p {
+            color: var(--text-color);
+            margin-bottom: 2.5rem;
+            font-size: 1.1rem;
+        }
+        .empty-cart .continue-shopping {
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            background: var(--primary-color);
+        }
+        .empty-cart .continue-shopping:hover {
+            background: #e03333;
+            box-shadow: 0 10px 20px rgba(255, 68, 68, 0.2);
+        }
+
+
+        /* 4. Новый дизайн карточки товара в корзине */
+        .cart-item {
+            display: flex;
+            gap: 1.5rem;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+        }
+        .cart-item:last-child {
+            border-bottom: none;
+        }
+        .item-image {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #666;
+            flex-shrink: 0;
+            border: 1px solid var(--border-color);
+        }
+        .item-details { flex: 1; }
+        .item-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+        .item-options { color: #888; font-size: 0.9rem; margin-bottom: 0.5rem; }
+        .item-price { font-size: 1.2rem; font-weight: bold; color: var(--primary-color); }
+        .item-old-price { color: #999; text-decoration: line-through; margin-left: 0.5rem; font-weight: normal; }
+        
+        .item-controls {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        /* 5. Переработанный переключатель количества */
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            background: var(--light-gray-color);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            overflow: hidden;
+        }
+        .quantity-btn {
+            background: none;
+            border: none;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-color);
+            transition: all 0.2s;
+        }
+        .quantity-btn:hover { background: #e9ecef; color: var(--primary-color); }
+        .quantity-display {
+            width: 40px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--dark-color);
+        }
+        .remove-item {
+            background: none;
+            border: none;
+            color: #aaa;
+            cursor: pointer;
+            font-size: 1.5rem;
+            padding: 0.5rem;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        .remove-item:hover { background: #ffebee; color: var(--primary-color); }
+
+        /* 6. Улучшенный блок "Итого" */
+        .summary-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            color: var(--dark-color);
+            position: relative;
+            padding-bottom: 0.75rem;
+        }
+        /* Декоративная линия под заголовком */
+        .summary-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 3px;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding: 0.5rem 0;
+            font-size: 1.05rem;
+        }
+        .summary-row span:last-child {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+        .summary-row.total {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--dark-color);
+            border-top: 2px solid var(--border-color);
+            margin-top: 1rem;
+            padding-top: 1.5rem;
+        }
+        .summary-row.total span:last-child {
+             color: var(--primary-color);
+        }
+
+        /* 7. Улучшенный ввод промокода */
+        .discount-code {
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: var(--light-gray-color);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+        }
+        .discount-input {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .discount-input input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .discount-input input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 68, 68, 0.1);
+        }
+        .apply-discount {
+            background: var(--dark-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .apply-discount:hover { background: var(--primary-color); }
+
+        /* 8. Более привлекательная кнопка оформления */
+        .checkout-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary-color), #ff6666);
+            color: white;
+            border: none;
+            padding: 1.2rem;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .checkout-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 68, 68, 0.3);
+        }
+        .checkout-btn::after {
+            content: '→'; /* Иконка-стрелка */
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+        .checkout-btn:hover::after {
+            transform: translateX(5px);
+        }
+
+        .security-info {
+            display: flex; align-items: center; gap: 0.5rem; justify-content: center; margin-top: 1.5rem; color: #888; font-size: 0.9rem;
+        }
+
+        .payment-methods {
+            margin-top: 2rem; text-align: center; border-top: 1px solid var(--border-color); padding-top: 1.5rem;
+        }
+        .payment-methods h4 { margin-bottom: 1rem; color: var(--dark-color); font-weight: 600; }
+        .payment-icons { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+        .payment-icon {
+            filter: grayscale(100%);
+            opacity: 0.6;
+            transition: all 0.3s;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+        }
+        .payment-icons:hover .payment-icon {
+            filter: grayscale(0%);
+            opacity: 1;
+        }
+
+        /* Recommended Products (без изменений) */
+        .recommended { background: white; border-radius: 15px; padding: 2rem; margin-top: 2rem; box-shadow: var(--shadow); }
+        .recommended-title { font-size: 1.8rem; margin-bottom: 2rem; text-align: center; color: var(--dark-color); }
+        .recommended-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
+        .recommended-item { border: 1px solid #eee; border-radius: 10px; overflow: hidden; transition: all 0.3s; cursor: pointer; }
+        .recommended-item:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
+        .recommended-image { height: 150px; background: linear-gradient(45deg, #f0f0f0, #e0e0e0); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: #999; }
+        .recommended-info { padding: 1rem; text-align: center; }
+        .recommended-name { font-weight: bold; margin-bottom: 0.5rem; color: var(--dark-color); }
+        .recommended-price { color: var(--primary-color); font-weight: bold; }
+
+        /* Mobile Responsive */
+        @media (max-width: 992px) {
+            .cart-content {
+                grid-template-columns: 1fr;
+            }
+            .cart-summary {
+                position: static;
+                order: -1; /* Ставим блок "Итого" сверху на мобильных */
+            }
+        }
+        @media (max-width: 768px) {
+            .nav-menu { display: none; }
+            .cart-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            .item-controls {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .recommended-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav container">
+            <a href="main.html" class="logo">Fashion Store</a>
+            <ul class="nav-menu">
+                <li><a href="main.html">Главная</a></li>
+                <li><a href="catalog.html">Каталог</a></li>
+                <li><a href="main.html#categories">Категории</a></li>
+                <li><a href="contacts.html">Контакты</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="catalog.html" class="continue-shopping">Продолжить покупки</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Cart Header -->
+    <section class="cart-header">
+        <div class="container">
+            <h1 class="cart-title">Ваша корзина</h1>
+        </div>
+    </section>
+
+    <!-- Cart Content -->
+    <div class="container">
+        <div class="cart-content" id="cartContent">
+            <!-- Content will be generated by JavaScript -->
+        </div>
+
+        <!-- Recommended Products -->
+        <section class="recommended">
+            <h2 class="recommended-title">Возможно, вас заинтересует</h2>
+            <div class="recommended-grid">
+                <div class="recommended-item" onclick="goToProduct(1)">
+                    <div class="recommended-image">🧥</div>
+                    <div class="recommended-info"><div class="recommended-name">Весенняя куртка</div><div class="recommended-price">4999₽</div></div>
+                </div>
+                <div class="recommended-item" onclick="goToProduct(2)">
+                    <div class="recommended-image">👟</div>
+                    <div class="recommended-info"><div class="recommended-name">Спортивные кроссовки</div><div class="recommended-price">3299₽</div></div>
+                </div>
+                <div class="recommended-item" onclick="goToProduct(3)">
+                    <div class="recommended-image">👜</div>
+                    <div class="recommended-info"><div class="recommended-name">Стильная сумка</div><div class="recommended-price">2799₽</div></div>
+                </div>
+                <div class="recommended-item" onclick="goToProduct(4)">
+                    <div class="recommended-image">🕶️</div>
+                    <div class="recommended-info"><div class="recommended-name">Солнцезащитные очки</div><div class="recommended-price">1999₽</div></div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:8000';
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        let discountCode = '';
+        let discountAmount = 0;
+
+        function renderCart() {
+            const cartContent = document.getElementById('cartContent');
+            
+            if (cart.length === 0) {
+                cartContent.innerHTML = `
+                    <div class="empty-cart">
+                        <div class="empty-cart-icon">🛒</div>
+                        <h2>Ваша корзина пока пуста</h2>
+                        <p>Самое время добавить в нее что-нибудь стильное!</p>
+                        <a href="catalog.html" class="continue-shopping">Перейти в каталог</a>
+                    </div>
+                `;
+                return;
+            }
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const delivery = subtotal > 5000 ? 0 : 350; // Увеличим порог бесплатной доставки
+            const total = subtotal + delivery - discountAmount;
+
+            cartContent.innerHTML = `
+                <div class="cart-items">
+                    ${cart.map((item, index) => `
+                        <div class="cart-item">
+                            <div class="item-image">${item.image}</div>
+                            <div class="item-details">
+                                <div class="item-name">${item.name}</div>
+                                <div class="item-options">
+                                    Размер: ${item.size || 'M'} | Цвет: ${getColorName(item.color) || 'Синий'}
+                                </div>
+                                <div class="item-price">
+                                    ${item.price}₽
+                                    ${item.oldPrice ? `<span class="item-old-price">${item.oldPrice}₽</span>` : ''}
+                                </div>
+                            </div>
+                            <div class="item-controls">
+                                <div class="quantity-control">
+                                    <button class="quantity-btn" onclick="updateQuantity(${index}, -1)">-</button>
+                                    <div class="quantity-display">${item.quantity}</div>
+                                    <button class="quantity-btn" onclick="updateQuantity(${index}, 1)">+</button>
+                                </div>
+                                <button class="remove-item" onclick="removeItem(${index})" title="Удалить товар">
+                                    ✕
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="cart-summary">
+                    <h3 class="summary-title">Сводка по заказу</h3>
+                    
+                    <div class="summary-row">
+                        <span>Товары (${cart.reduce((sum, item) => sum + item.quantity, 0)} шт.)</span>
+                        <span>${subtotal.toLocaleString('ru-RU')}₽</span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span>Доставка</span>
+                        <span>${delivery === 0 ? 'Бесплатно' : delivery + '₽'}</span>
+                    </div>
+                    
+                    ${discountAmount > 0 ? `
+                        <div class="summary-row" style="color: #28a745;">
+                            <span>Скидка (${discountCode})</span>
+                            <span>-${discountAmount.toLocaleString('ru-RU')}₽</span>
+                        </div>
+                    ` : ''}
+                    
+                    <div class="summary-row total">
+                        <span>К оплате</span>
+                        <span>${total.toLocaleString('ru-RU')}₽</span>
+                    </div>
+
+                    <div class="discount-code">
+                        <h4>Есть промокод?</h4>
+                        <div class="discount-input">
+                            <input type="text" placeholder="Введите промокод" id="discountInput">
+                            <button class="apply-discount" onclick="applyDiscount()">Применить</button>
+                        </div>
+                    </div>
+
+                    <button class="checkout-btn" onclick="proceedToCheckout()">
+                        Оформить заказ
+                    </button>
+
+                    <div class="security-info">
+                        <span>🔒</span>
+                        <span>Безопасная оплата и данные</span>
+                    </div>
+
+                    <div class="payment-methods">
+                        <h4>Принимаем к оплате</h4>
+                        <div class="payment-icons">
+                            <div class="payment-icon">VISA</div>
+                            <div class="payment-icon">MC</div>
+                            <div class="payment-icon">МИР</div>
+                            <div class="payment-icon">SBP</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getColorName(color) {
+            const colorNames = {
+                'blue': 'Синий', 'black': 'Черный', 'white': 'Белый', 'red': 'Красный', 'gray': 'Серый'
+            };
+            return colorNames[color] || color;
+        }
+
+        function updateQuantity(index, change) {
+            if (cart[index]) {
+                cart[index].quantity = Math.max(1, cart[index].quantity + change);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                renderCart();
+            }
+        }
+
+        function removeItem(index) {
+            if (confirm('Вы уверены, что хотите удалить товар из корзины?')) {
+                const removedItemName = cart[index].name;
+                cart.splice(index, 1);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                renderCart();
+                showNotification(`"${removedItemName}" удален из корзины`);
+            }
+        }
+
+        async function applyDiscount() {
+            const codeInput = document.getElementById('discountInput');
+            const code = codeInput.value.trim().toUpperCase();
+            if (!code) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/promo/validate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: code })
+                });
+
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.detail || 'Неверный промокод');
+
+                discountCode = result.code;
+                const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                
+                if (result.discount_type === 'percent') {
+                    discountAmount = Math.round(subtotal * (result.value / 100));
+                } else if (result.discount_type === 'fixed') {
+                    discountAmount = result.value;
+                }
+                
+                renderCart();
+                showNotification('Промокод успешно применен!', 'success');
+            } catch (error) {
+                discountAmount = 0;
+                discountCode = '';
+                renderCart();
+                showNotification(error.message, 'error');
+            }
+        }
+
+        function proceedToCheckout() {
+            if (cart.length === 0) {
+                showNotification('Корзина пуста', 'error');
+                return;
+            }
+            window.location.href = 'checkout.html';
+        }
+
+        function goToProduct(productId) {
+            window.location.href = `product.html?id=${productId}`;
+        }
+
+        function showNotification(message, type = 'success') {
+            // ... (код функции showNotification) ...
+        }
+
+        document.addEventListener('DOMContentLoaded', renderCart);
+    </script>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fashion Store - Стильная одежда для всех</title>
+    <style>
+        /* Стили остаются без изменений, поэтому я их скрыл для краткости */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .header { background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        .nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; }
+        .logo { display: flex; align-items: center; font-size: 1.5rem; font-weight: bold; color: #ff4444; }
+        .logo::before { content: '🛍️'; margin-right: 10px; }
+        .nav-menu { display: flex; list-style: none; gap: 2rem; }
+        .nav-menu a { text-decoration: none; color: #333; font-weight: 500; transition: color 0.3s; }
+        .nav-menu a:hover { color: #ff4444; }
+        .nav-actions { display: flex; gap: 1rem; align-items: center; }
+        .search-box { padding: 0.5rem 1rem; border: 2px solid #eee; border-radius: 25px; outline: none; transition: border-color 0.3s; }
+        .search-box:focus { border-color: #ff4444; }
+        .cart-btn { background: #ff4444; color: white; border: none; padding: 0.7rem 1.5rem; border-radius: 25px; cursor: pointer; font-weight: bold; transition: all 0.3s; position: relative; text-decoration: none; }
+        .cart-btn:hover { background: #e03333; transform: translateY(-2px); }
+        .cart-count { position: absolute; top: -8px; right: -8px; background: #fff; color: #ff4444; border-radius: 50%; width: 20px; height: 20px; font-size: 0.8rem; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .sale-banner { background: linear-gradient(135deg, #ff4444, #ff6666); color: white; text-align: center; padding: 0.8rem; font-weight: bold; }
+        .hero { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 4rem 0; text-align: center; position: relative; overflow: hidden; }
+        .hero-content { position: relative; z-index: 2; }
+        .hero h1 { font-size: 3rem; margin-bottom: 1rem; color: #333; animation: fadeInUp 1s ease; }
+        .hero .subtitle { font-size: 1.2rem; color: #666; margin-bottom: 2rem; animation: fadeInUp 1s ease 0.2s both; }
+        .cta-btn { background: #333; color: white; padding: 1rem 2rem; border: none; border-radius: 30px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: all 0.3s; animation: fadeInUp 1s ease 0.4s both; }
+        .cta-btn:hover { background: #555; transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .hero-image { position: absolute; right: -10%; top: 50%; transform: translateY(-50%); width: 600px; height: 600px; background: linear-gradient(45deg, #ff4444, #ff8888); border-radius: 50%; opacity: 0.1; animation: float 6s ease-in-out infinite; }
+        .categories { padding: 4rem 0; }
+        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 3rem; color: #333; }
+        .categories-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .category-card { position: relative; height: 300px; border-radius: 15px; overflow: hidden; cursor: pointer; transition: all 0.3s; background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); }
+        .category-card:nth-child(1) { background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%); }
+        .category-card:nth-child(2) { background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%); }
+        .category-card:nth-child(3) { background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%); }
+        .category-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        .category-content { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: white; padding: 2rem; transform: translateY(60%); transition: all 0.3s; }
+        .category-card:hover .category-content { transform: translateY(0); }
+        .category-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .trending { background: #f8f9fa; padding: 4rem 0; }
+        .trending-tabs { display: flex; justify-content: center; gap: 2rem; margin-bottom: 2rem; }
+        .tab { padding: 0.8rem 1.5rem; background: none; border: 2px solid #ddd; border-radius: 25px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+        .tab.active { background: #ff4444; color: white; border-color: #ff4444; }
+        .tab:hover { border-color: #ff4444; }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 2rem; }
+        .product-card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: all 0.3s; cursor: pointer; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.2); }
+        .product-image { height: 200px; background: linear-gradient(45deg, #f0f0f0, #e0e0e0); display: flex; align-items: center; justify-content: center; font-size: 3rem; color: #999; }
+        .product-info { padding: 1.5rem; }
+        .product-name { font-weight: bold; margin-bottom: 0.5rem; font-size: 1.1rem; }
+        .product-price { color: #ff4444; font-size: 1.2rem; font-weight: bold; }
+        .add-to-cart { width: 100%; background: #333; color: white; border: none; padding: 0.8rem; margin-top: 1rem; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+        .add-to-cart:hover { background: #ff4444; }
+        .footer { background: #333; color: white; padding: 3rem 0 1rem; text-align: center; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes float { 0%, 100% { transform: translateY(-50%) rotate(0deg); } 50% { transform: translateY(-60%) rotate(5deg); } }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav container">
+            <a href="main.html" class="logo">Fashion Store</a>
+            <ul class="nav-menu">
+                <li><a href="main.html">Главная</a></li>
+                <li><a href="catalog.html">Каталог</a></li>
+                <li><a href="contacts.html">Контакты</a></li>
+            </ul>
+            <div class="nav-actions">
+                <input type="text" class="search-box" placeholder="Поиск товаров...">
+                <a href="cart.html" class="cart-btn">
+                    Корзина
+                    <span class="cart-count" id="cartCount">0</span>
+                </a>
+            </div>
+        </nav>
+    </header>
+    
+    <!-- ... (остальной HTML остается без изменений) ... -->
+    <section class="trending" id="trending">
+        <div class="container">
+            <h2 class="section-title">Популярное на этой неделе</h2>
+            <div class="trending-tabs">
+                <button class="tab active" onclick="showProducts(event, 'all')">Все</button>
+                <button class="tab" onclick="showProducts(event, 'men')">Мужское</button>
+                <button class="tab" onclick="showProducts(event, 'women')">Женское</button>
+                <button class="tab" onclick="showProducts(event, 'kids')">Детское</button>
+            </div>
+            <div class="products-grid" id="productsGrid">
+                <!-- Products will be generated by JavaScript -->
+            </div>
+        </div>
+    </section>
+    <!-- ... (footer и т.д.) ... -->
+
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:8000';
+        let allProducts = []; // Кэш для всех товаров
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+        // Отображение товаров
+        function displayProducts(productsToShow) {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+
+            if (!productsToShow || productsToShow.length === 0) {
+                grid.innerHTML = '<p>Товары не найдены.</p>';
+                return;
+            }
+
+            productsToShow.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                // Добавляем переход на страницу товара
+                productCard.onclick = () => { window.location.href = `product.html?id=${product.id}`; };
+                productCard.innerHTML = `
+                    <div class="product-image">${product.image}</div>
+                    <div class="product-info">
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-price">${product.price}₽</div>
+                        <button class="add-to-cart" onclick="event.stopPropagation(); addToCart(${product.id})">
+                            Добавить в корзину
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(productCard);
+            });
+        }
+
+        // Фильтрация товаров по категории
+        function showProducts(event, category) {
+            // Обновляем активную вкладку
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Фильтруем из уже загруженных данных
+            let filteredProducts = allProducts;
+            if (category !== 'all') {
+                filteredProducts = allProducts.filter(product => product.category === category);
+            }
+            
+            displayProducts(filteredProducts);
+        }
+
+        // Добавление в корзину
+        function addToCart(productId) {
+            // Находим товар в нашем кэше allProducts
+            const product = allProducts.find(p => p.id === productId);
+            if (product) {
+                const cartItem = {
+                    ...product,
+                    quantity: 1
+                };
+                cart.push(cartItem);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                showNotification(`${product.name} добавлен в корзину!`);
+            }
+        }
+        
+        function updateCartCount() {
+            document.getElementById('cartCount').textContent = cart.length;
+        }
+        
+        // Загрузка товаров с бэкенда
+        async function loadProducts() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '<p>Загрузка товаров...</p>';
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/products`);
+                if (!response.ok) {
+                    throw new Error('Не удалось загрузить товары');
+                }
+                allProducts = await response.json();
+                displayProducts(allProducts); // Показываем все товары при первой загрузке
+            } catch (error) {
+                console.error(error);
+                grid.innerHTML = '<p>Ошибка при загрузке товаров. Попробуйте позже.</p>';
+            }
+        }
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartCount();
+            loadProducts();
+        });
+
+        // Функция уведомлений (можно вынести в общий файл)
+        function showNotification(message) {
+            // ... (код функции showNotification) ...
+        }
+    </script>
+</body>
+</html>
